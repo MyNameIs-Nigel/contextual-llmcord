@@ -1,0 +1,22 @@
+bot:
+  prefix: "!"
+  status_message: "Mention me to chat!"
+
+default_model: "openai/gpt-4o"
+
+channel_models: {}
+
+context_window: 20
+
+system_prompt: |
+  You are a helpful assistant in a Discord server.
+  Be concise but friendly. You have memory of each user per channel.
+
+memory:
+  max_facts_per_user: 50
+  inject_in_system: true
+
+openrouter:
+  site_url: "https://github.com/yourusername/discord-llm-bot"
+  site_name: "Discord LLM Bot"
+  timeout_ms: 30000
