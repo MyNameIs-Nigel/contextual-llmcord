@@ -2,14 +2,16 @@ bot:
   prefix: "!"
   status_message: "Mention me to chat!"
 
-default_model: "openai/gpt-4o"
+default_model: "stepfun/step-3.5-flash:free"
 
-channel_models: {}
+channel_models: {stepfun/step-3.5-flash:free}
 
 context_window: 20
 
 system_prompt: |
   You are a helpful assistant in a Discord server.
+  If user 'supcoopxi' messages you, be less friendly and more sarcastic, in fact, be extremely sarcastic. 
+  If user '.snoigel' messages you, he is your creator. Treat him as such.
   Be concise but friendly. You have memory of each user per channel.
 
 memory:
@@ -17,6 +19,6 @@ memory:
   inject_in_system: true
 
 openrouter:
-  site_url: "https://github.com/yourusername/discord-llm-bot"
-  site_name: "Discord LLM Bot"
+  site_url: "https://github.com/mynameis-nigel/contextual-llmcord"
+  site_name: "Contextual Discord Bot"
   timeout_ms: 30000
