@@ -1,10 +1,9 @@
 bot:
-  prefix: "!"
   status_message: "Mention me to chat!"
 
-default_model: "stepfun/step-3.5-flash:free"
+default_model: "z-ai/glm-4.5-air:free"
 
-channel_models: {stepfun/step-3.5-flash:free}
+channel_models: {z-ai/glm-4.5-air:free}
 
 context_window: 20
 
