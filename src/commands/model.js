@@ -12,7 +12,12 @@ import {
 } from '../models.js';
 
 function buildModelList(currentModel) {
-  return getModelChoices()
+  const choices = getModelChoices();
+  if (choices.length === 0) {
+    return 'No models are currently available. Set OPENROUTER_API_KEY or GOOGLE_API_KEY.';
+  }
+
+  return choices
     .map((choice) => {
       const prefix = choice.value === currentModel ? '* ' : '- ';
       return `${prefix}${choice.name} (${choice.value})`;

@@ -1,6 +1,11 @@
 import { config, getModelForChannel as getConfiguredModelForChannel } from './config.js';
 import { getDb } from './db/database.js';
-import { isSupportedModel } from './models.js';
+import {
+  getFirstAvailableModel,
+  isModelAvailable,
+  isSupportedModel,
+  normalizeModelValue,
+} from './models.js';
 
 /**
  * @param {string} channelId
@@ -12,7 +17,7 @@ export function getChannelModelOverride(channelId) {
     'SELECT model FROM channel_model_overrides WHERE channel_id = ?'
   );
   const row = stmt.get(String(channelId));
-  return typeof row?.model === 'string' ? row.model : null;
+  return typeof row?.model === 'string' ? normalizeModelValue(row.model) : null;
 }
 
 /**
@@ -20,7 +25,22 @@ export function getChannelModelOverride(channelId) {
  * @returns {string}
  */
 export function getSelectedModelForChannel(channelId) {
-  return getChannelModelOverride(channelId) ?? getConfiguredModelForChannel(channelId);
+  const override = getChannelModelOverride(channelId);
+  if (override && isModelAvailable(override)) {
+    return override;
+  }
+
+  const configured = normalizeModelValue(getConfiguredModelForChannel(channelId));
+  if (configured && isModelAvailable(configured)) {
+    return configured;
+  }
+
+  const fallback = getFirstAvailableModel();
+  if (fallback) {
+    return fallback;
+  }
+
+  throw new Error('No model providers are configured. Set OPENROUTER_API_KEY or GOOGLE_API_KEY.');
 }
 
 /**
@@ -28,8 +48,12 @@ export function getSelectedModelForChannel(channelId) {
  * @param {string} model
  */
 export function setChannelModelOverride(channelId, model) {
-  if (!isSupportedModel(model)) {
+  const normalized = normalizeModelValue(model);
+  if (!isSupportedModel(normalized)) {
     throw new Error(`Unsupported model: ${model}`);
+  }
+  if (!isModelAvailable(normalized)) {
+    throw new Error(`Model is not available with the current environment: ${normalized}`);
   }
 
   const db = getDb();
@@ -40,7 +64,7 @@ export function setChannelModelOverride(channelId, model) {
       model = excluded.model,
       updated_at = CURRENT_TIMESTAMP
   `);
-  stmt.run(String(channelId), model);
+  stmt.run(String(channelId), normalized);
 }
 
 /**
@@ -58,5 +82,9 @@ export function clearChannelModelOverride(channelId) {
  * @returns {string}
  */
 export function getDefaultModel() {
-  return config.default_model;
+  const configured = normalizeModelValue(config.default_model);
+  if (configured && isModelAvailable(configured)) {
+    return configured;
+  }
+  return getFirstAvailableModel() ?? configured;
 }
