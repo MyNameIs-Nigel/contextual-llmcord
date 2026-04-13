@@ -4,7 +4,7 @@ import {
   Events,
   GatewayIntentBits,
 } from 'discord.js';
-import { config, getModelForChannel } from './config.js';
+import { config } from './config.js';
 import { buildContextMessages, stripBotMention } from './context.js';
 import {
   buildMemoryUserMessage,
@@ -13,7 +13,9 @@ import {
   parseMemoryBlock,
 } from './llm.js';
 import { addFacts } from './memory.js';
+import { getSelectedModelForChannel } from './channelModels.js';
 import { executeClearCommand } from './commands/clear.js';
+import { executeModelCommand } from './commands/model.js';
 import { executeMemoryCommand } from './commands/memory.js';
 
 const inFlight = new Set();
@@ -57,7 +59,7 @@ export function setupBot() {
       sendTyping();
       typingInterval = setInterval(sendTyping, 9000);
 
-      const model = getModelForChannel(message.channelId);
+      const model = getSelectedModelForChannel(message.channelId);
       /** @type {{ role: string; content: string }[]} */
       const msgs = await buildContextMessages(message, config);
 
@@ -131,6 +133,10 @@ export function setupBot() {
       }
       if (interaction.commandName === 'clear') {
         await executeClearCommand(interaction);
+        return;
+      }
+      if (interaction.commandName === 'model') {
+        await executeModelCommand(interaction);
       }
     } catch (err) {
       console.error('[bot] interaction error:', err);

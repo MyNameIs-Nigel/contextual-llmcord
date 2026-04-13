@@ -1,5 +1,6 @@
 import 'dotenv/config';
-import { REST, Routes } from 'discord.js';
+import { ApplicationCommandOptionType, REST, Routes } from 'discord.js';
+import { DEFAULT_MODEL_CHOICE, getModelChoices } from '../models.js';
 
 const commands = [
   {
@@ -9,6 +10,25 @@ const commands = [
   {
     name: 'clear',
     description: "Clear the bot's memory of you in this channel",
+  },
+  {
+    name: 'model',
+    description: 'View or change the model used in this channel',
+    options: [
+      {
+        type: ApplicationCommandOptionType.String,
+        name: 'name',
+        description: 'Pick a model for this channel',
+        required: false,
+        choices: [
+          ...getModelChoices(),
+          {
+            name: 'Use default model',
+            value: DEFAULT_MODEL_CHOICE,
+          },
+        ],
+      },
+    ],
   },
 ];
 

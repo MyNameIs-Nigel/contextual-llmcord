@@ -9,3 +9,9 @@ CREATE TABLE IF NOT EXISTS user_memory (
 
 CREATE INDEX IF NOT EXISTS idx_user_channel
   ON user_memory(user_id, channel_id);
+
+CREATE TABLE IF NOT EXISTS channel_model_overrides (
+  channel_id  TEXT PRIMARY KEY,
+  model       TEXT NOT NULL,
+  updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+);
