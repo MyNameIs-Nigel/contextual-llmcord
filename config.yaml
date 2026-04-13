@@ -1,7 +1,7 @@
 bot:
   status_message: "Mention me to chat!"
 
-default_model: "openrouter/z-ai/glm-4.5-air:free"
+default_model: "google/gemini-2.5-flash-lite"
 
 channel_models: {z-ai/glm-4.5-air:free}
 
